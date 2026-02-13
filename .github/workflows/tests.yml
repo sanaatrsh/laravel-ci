@@ -81,7 +81,7 @@ jobs:
         run: vendor/bin/pint --test
 
       - name: PHPStan Static Analysis
-        run: vendor/bin/phpstan analyse --no-progress
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G
 
       - name: Rector Dry Run
         run: vendor/bin/rector process --dry-run
