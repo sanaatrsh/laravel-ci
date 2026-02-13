@@ -40,6 +40,7 @@ trait UserFilterQuery
     {
         return $query->where('created_at', '>=', $date);
     }
+
     public function scopeCreatedBefore($query, $date)
     {
         return $query->where('created_at', '<=', $date);

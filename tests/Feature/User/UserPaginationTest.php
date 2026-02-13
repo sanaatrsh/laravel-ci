@@ -14,10 +14,10 @@ beforeEach(function () {
 it('paginates users with default per page', function () {
     // Arrange
     User::factory()->count(25)->create();
-    
+
     // Act
     $response = $this->getJson('/api/users');
-    
+
     // Assert
     $response->assertOk();
     $data = $response->json('data');
@@ -29,10 +29,10 @@ it('paginates users with default per page', function () {
 it('paginates users with custom per page', function () {
     // Arrange
     User::factory()->count(15)->create();
-    
+
     // Act
     $response = $this->getJson('/api/users?per_page=5');
-    
+
     // Assert
     $response->assertOk();
     $data = $response->json('data');
@@ -43,10 +43,10 @@ it('paginates users with custom per page', function () {
 it('handles pagination for empty result set', function () {
     // Arrange
     // No models created
-    
+
     // Act
     $response = $this->getJson('/api/users');
-    
+
     // Assert
     $response->assertOk();
     $data = $response->json('data');
@@ -58,10 +58,10 @@ it('handles pagination for empty result set', function () {
 it('handles pagination beyond last page', function () {
     // Arrange
     User::factory()->count(5)->create();
-    
+
     // Act
     $response = $this->getJson('/api/users?page=999');
-    
+
     // Assert
     $response->assertOk();
     $data = $response->json('data');
@@ -72,12 +72,11 @@ it('handles pagination beyond last page', function () {
 it('includes pagination metadata', function () {
     // Arrange
     User::factory()->count(25)->create();
-    
+
     // Act
     $response = $this->getJson('/api/users');
-    
+
     // Assert
     $response->assertOk();
     expect($response->json('meta'))->toHaveKeys(['current_page', 'per_page', 'total', 'last_page']);
 });
-

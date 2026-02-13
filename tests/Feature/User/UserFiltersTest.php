@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Models\User;
-use Mrmarchone\LaravelAutoCrud\Enums\ResponseMessages;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
@@ -20,48 +19,52 @@ it('sorts users', function () {
     $response->assertOk();
 
     $val1 = $response->json('data.0.name');
-    if (is_array($val1)) $val1 = $val1['en'] ?? array_values($val1)[0];
+    if (is_array($val1)) {
+        $val1 = $val1['en'] ?? array_values($val1)[0];
+    }
 
-    expect((string)$val1)->toContain('A');
+    expect((string) $val1)->toContain('A');
 
     $response = $this->getJson('/api/users?sort=-name');
     $response->assertOk();
 
     $val2 = $response->json('data.0.name');
-    if (is_array($val2)) $val2 = $val2['en'] ?? array_values($val2)[0];
+    if (is_array($val2)) {
+        $val2 = $val2['en'] ?? array_values($val2)[0];
+    }
 
-    expect((string)$val2)->toContain('Z');
+    expect((string) $val2)->toContain('Z');
 });
 
 it('filters users by name', function () {
-            User::factory()->create(['name' => 'Sample name']);
-            User::factory()->create();
+    User::factory()->create(['name' => 'Sample name']);
+    User::factory()->create();
 
-            $response = $this->getJson('/api/users?filter[name]=' . ('Sample name'));
+    $response = $this->getJson('/api/users?filter[name]='.('Sample name'));
 
-            $response->assertOk();
-            expect($response->json('data'))->toHaveCount(1);
-        });
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(1);
+});
 
 it('filters users by email', function () {
-            User::factory()->create(['email' => 'test@example.com']);
-            User::factory()->create();
+    User::factory()->create(['email' => 'test@example.com']);
+    User::factory()->create();
 
-            $response = $this->getJson('/api/users?filter[email]=' . ('test@example.com'));
+    $response = $this->getJson('/api/users?filter[email]='.('test@example.com'));
 
-            $response->assertOk();
-            expect($response->json('data'))->toHaveCount(1);
-        });
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(1);
+});
 
 it('filters users by email_verified_at', function () {
-            User::factory()->create(['email_verified_at' => 'test@example.com']);
-            User::factory()->create();
+    User::factory()->create(['email_verified_at' => 'test@example.com']);
+    User::factory()->create();
 
-            $response = $this->getJson('/api/users?filter[emailVerifiedAt]=' . ('test@example.com'));
+    $response = $this->getJson('/api/users?filter[emailVerifiedAt]='.('test@example.com'));
 
-            $response->assertOk();
-            expect($response->json('data'))->toHaveCount(1);
-        });
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(1);
+});
 
 it('filters users by date range', function () {
     User::factory()->create(['created_at' => now()->subDays(5)]);
@@ -69,8 +72,8 @@ it('filters users by date range', function () {
 
     $after = now()->subDays(2)->format('Y-m-d');
     $before = now()->format('Y-m-d');
-    
-    $response = $this->getJson('/api/users?filter[createdAfter]=' . $after . '&filter[createdBefore]=' . $before);
+
+    $response = $this->getJson('/api/users?filter[createdAfter]='.$after.'&filter[createdBefore]='.$before);
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);
@@ -84,4 +87,3 @@ it('paginates filtered users', function () {
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(5);
 });
-

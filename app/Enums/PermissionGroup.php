@@ -6,4 +6,3 @@ enum PermissionGroup: string
 {
     case USER = 'users';
 }
-
