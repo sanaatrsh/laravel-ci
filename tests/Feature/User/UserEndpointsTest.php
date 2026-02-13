@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Mrmarchone\LaravelAutoCrud\Enums\ResponseMessages;
 
@@ -27,7 +26,6 @@ it('lists users', function () {
             ->and($firstItem)->toHaveKey('name')
             ->and($firstItem)->toHaveKey('email')
             ->and($firstItem)->toHaveKey('emailVerifiedAt');
-
     }
 });
 
@@ -57,7 +55,6 @@ it('shows a user', function () {
         ->and($data)->toHaveKey('name')
         ->and($data)->toHaveKey('email')
         ->and($data)->toHaveKey('emailVerifiedAt');
-
 });
 
 it('updates a user', function () {
@@ -88,7 +85,7 @@ it('returns 404 when showing non-existent user', function () {
     $nonExistentId = 99999;
 
     // Act
-    $response = $this->getJson('/api/users/'.$nonExistentId);
+    $response = $this->getJson('/api/users/' . $nonExistentId);
 
     // Assert
     $response->assertNotFound();
@@ -97,14 +94,16 @@ it('returns 404 when showing non-existent user', function () {
 it('returns 404 when updating non-existent user', function () {
     // Arrange
     $nonExistentId = 99999;
-    $payload = ['name' => 'Sample name updated',
+    $payload = [
+        'name' => 'Sample name updated',
         'email' => 'test_updated@example.com',
         'emailVerifiedAt' => 'test_updated@example.com',
         'password' => 'Sample password updated',
-        'rememberToken' => 'Sample remember_token updated', ];
+        'rememberToken' => 'Sample remember_token updated',
+    ];
 
     // Act
-    $response = $this->putJson('/api/users/'.$nonExistentId, $payload);
+    $response = $this->putJson('/api/users/' . $nonExistentId, $payload);
 
     // Assert
     $response->assertNotFound();
@@ -115,7 +114,7 @@ it('returns 404 when deleting non-existent user', function () {
     $nonExistentId = 99999;
 
     // Act
-    $response = $this->deleteJson('/api/users/'.$nonExistentId);
+    $response = $this->deleteJson('/api/users/' . $nonExistentId);
 
     // Assert
     $response->assertNotFound();

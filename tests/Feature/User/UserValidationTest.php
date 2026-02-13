@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
@@ -25,9 +24,11 @@ it('validates required fields when creating a user', function () {
 
 it('validates email must be a valid email', function () {
     // Arrange
-    $payload = ['name' => 'Sample name',
+    $payload = [
+        'name' => 'Sample name',
         'email' => 'invalid-email',
-        'emailVerifiedAt' => 'test@example.com', ];
+        'emailVerifiedAt' => 'test@example.com',
+    ];
 
     // Act
     $response = $this->postJson('/api/users', $payload);
@@ -39,9 +40,11 @@ it('validates email must be a valid email', function () {
 
 it('validates emailVerifiedAt must be a valid email', function () {
     // Arrange
-    $payload = ['name' => 'Sample name',
+    $payload = [
+        'name' => 'Sample name',
         'email' => 'test@example.com',
-        'emailVerifiedAt' => 'invalid-email', ];
+        'emailVerifiedAt' => 'invalid-email',
+    ];
 
     // Act
     $response = $this->postJson('/api/users', $payload);
@@ -53,9 +56,11 @@ it('validates emailVerifiedAt must be a valid email', function () {
 
 it('validates emailVerifiedAt must be a valid date format', function () {
     // Arrange
-    $payload = ['name' => 'Sample name',
+    $payload = [
+        'name' => 'Sample name',
         'email' => 'test@example.com',
-        'emailVerifiedAt' => 'invalid-date', ];
+        'emailVerifiedAt' => 'invalid-date',
+    ];
 
     // Act
     $response = $this->postJson('/api/users', $payload);
