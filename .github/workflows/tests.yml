@@ -60,6 +60,9 @@ jobs:
       - name: Build Assets
         run: bun run build
 
+      # --------------------------------
+      # Cache Tools
+      # --------------------------------
       - name: Cache Rector
         uses: actions/cache@v4
         with:
@@ -76,6 +79,23 @@ jobs:
 
       - name: Create Cache Directories
         run: mkdir -p /tmp/rector /tmp/phpstan
+
+      # --------------------------------
+      # Quality Gates (طلب المشرف)
+      # --------------------------------
+
+      - name: Check Code Style (Pint)
+        run: vendor/bin/pint --test
+
+      - name: Rector Dry Run
+        run: vendor/bin/rector process --dry-run
+
+      - name: Static Analysis (PHPStan)
+        run: vendor/bin/phpstan analyse
+
+      # --------------------------------
+      # Tests
+      # --------------------------------
 
       - name: Tests
         run: composer test
