@@ -7,30 +7,25 @@ use Illuminate\Support\Facades\DB;
 
 class BadExampleController extends Controller
 {
-
     public function index(Request $request)
     {
 
         // ❌ Pint: تنسيق سيء + مسافات + Style مخالف
 
-        $name = $request->input("name");
-
+        $name = $request->input('name');
 
         // ❌ PHPStan: ممكن يرجع null لكن نعامله string مباشرة
         $upperName = strtoupper($name);
 
-
         // ❌ Rector: array() قديم بدل []
-        $data = array(
-            "name" => $upperName,
-            "time" => time()
-        );
-
+        $data = [
+            'name' => $upperName,
+            'time' => time(),
+        ];
 
         // ❌ PHPStan: return type غير محدد
         return response()->json($data);
     }
-
 
     public function getUser($id)
     {
@@ -38,11 +33,9 @@ class BadExampleController extends Controller
         // ❌ PHPStan: $id يجب أن يكون int وليس string
         $user = DB::table('users')->where('id', $id)->first();
 
-
         // ❌ PHPStan: ممكن يكون null ثم نستخدم property
         return $user->email;
     }
-
 
     public function calculateTotal($numbers)
     {
@@ -60,7 +53,6 @@ class BadExampleController extends Controller
         return $total;
     }
 
-
     public function unusedCode()
     {
 
@@ -69,7 +61,7 @@ class BadExampleController extends Controller
 
         // ❌ Pint: تنسيق سيء
         if (true) {
-            echo "hello";
+            echo 'hello';
         }
     }
 }
