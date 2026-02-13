@@ -39,7 +39,7 @@ it('filters users by name', function () {
     User::factory()->create(['name' => 'Sample name']);
     User::factory()->create();
 
-    $response = $this->getJson('/api/users?filter[name]=' . ('Sample name'));
+    $response = $this->getJson('/api/users?filter[name]='.('Sample name'));
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);
@@ -49,7 +49,7 @@ it('filters users by email', function () {
     User::factory()->create(['email' => 'test@example.com']);
     User::factory()->create();
 
-    $response = $this->getJson('/api/users?filter[email]=' . ('test@example.com'));
+    $response = $this->getJson('/api/users?filter[email]='.('test@example.com'));
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);
@@ -59,7 +59,7 @@ it('filters users by email_verified_at', function () {
     User::factory()->create(['email_verified_at' => 'test@example.com']);
     User::factory()->create();
 
-    $response = $this->getJson('/api/users?filter[emailVerifiedAt]=' . ('test@example.com'));
+    $response = $this->getJson('/api/users?filter[emailVerifiedAt]='.('test@example.com'));
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);
@@ -72,7 +72,7 @@ it('filters users by date range', function () {
     $after = now()->subDays(2)->format('Y-m-d');
     $before = now()->format('Y-m-d');
 
-    $response = $this->getJson('/api/users?filter[createdAfter]=' . $after . '&filter[createdBefore]=' . $before);
+    $response = $this->getJson('/api/users?filter[createdAfter]='.$after.'&filter[createdBefore]='.$before);
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);

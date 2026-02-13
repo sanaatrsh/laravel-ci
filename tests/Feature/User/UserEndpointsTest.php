@@ -85,7 +85,7 @@ it('returns 404 when showing non-existent user', function () {
     $nonExistentId = 99999;
 
     // Act
-    $response = $this->getJson('/api/users/' . $nonExistentId);
+    $response = $this->getJson('/api/users/'.$nonExistentId);
 
     // Assert
     $response->assertNotFound();
@@ -103,7 +103,7 @@ it('returns 404 when updating non-existent user', function () {
     ];
 
     // Act
-    $response = $this->putJson('/api/users/' . $nonExistentId, $payload);
+    $response = $this->putJson('/api/users/'.$nonExistentId, $payload);
 
     // Assert
     $response->assertNotFound();
@@ -114,7 +114,7 @@ it('returns 404 when deleting non-existent user', function () {
     $nonExistentId = 99999;
 
     // Act
-    $response = $this->deleteJson('/api/users/' . $nonExistentId);
+    $response = $this->deleteJson('/api/users/'.$nonExistentId);
 
     // Assert
     $response->assertNotFound();

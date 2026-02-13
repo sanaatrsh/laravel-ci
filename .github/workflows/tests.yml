@@ -33,12 +33,6 @@ jobs:
           coverage: xdebug
 
       # -----------------------
-      # Setup Bun
-      # -----------------------
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      # -----------------------
       # Cache Dependencies
       # -----------------------
       - name: Cache Composer
@@ -47,20 +41,11 @@ jobs:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
 
-      - name: Cache Bun
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: bun-${{ hashFiles('bun.lockb') }}
-
       # -----------------------
       # Install Dependencies
       # -----------------------
       - name: Install PHP Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Install Frontend Dependencies
-        run: bun install --frozen-lockfile
 
       # -----------------------
       # Laravel Setup
@@ -69,12 +54,6 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
-
-      # -----------------------
-      # Build Assets
-      # -----------------------
-      - name: Build Assets
-        run: bun run build
 
       # -----------------------
       # Cache Static Analysis Tools
@@ -101,11 +80,11 @@ jobs:
       - name: Pint Code Style Check
         run: vendor/bin/pint --test
 
-      # - name: Rector Dry Run
-      #   run: vendor/bin/rector process --dry-run
+      - name: PHPStan Static Analysis
+        run: vendor/bin/phpstan analyse --no-progress
 
-      # - name: PHPStan Static Analysis
-      #   run: vendor/bin/phpstan analyse --no-progress
+      - name: Rector Dry Run
+        run: vendor/bin/rector process --dry-run
 
       # =======================
       # TESTS + COVERAGE

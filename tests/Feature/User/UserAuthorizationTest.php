@@ -54,7 +54,7 @@ it('forbids unauthorized user from updating user', function () {
     ];
 
     // Act
-    $response = $this->putJson('/api/users/' . $model->id, $payload);
+    $response = $this->putJson('/api/users/'.$model->id, $payload);
 
     // Assert
     $response->assertForbidden();
@@ -67,7 +67,7 @@ it('forbids unauthorized user from deleting user', function () {
     Sanctum::actingAs($user);
 
     // Act
-    $response = $this->deleteJson('/api/users/' . $model->id);
+    $response = $this->deleteJson('/api/users/'.$model->id);
 
     // Assert
     $response->assertForbidden();
