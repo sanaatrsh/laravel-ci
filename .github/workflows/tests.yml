@@ -112,11 +112,7 @@ jobs:
       # =======================
 
       - name: Run Tests with Coverage
-        run: vendor/bin/pest --coverage --min=70
-
-      - name: Generate Coverage HTML
-        if: always()
-        run: vendor/bin/pest --coverage-html coverage
+        run: php artisan test --coverage --min=70
 
       # -----------------------
       # Upload Coverage Report
