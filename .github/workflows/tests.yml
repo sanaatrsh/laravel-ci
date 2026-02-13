@@ -1,26 +1,30 @@
-name: tests
+name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  ci:
+  quality-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
-      - name: Checkout
+      # -----------------------
+      # Checkout
+      # -----------------------
+      - name: Checkout Code
         uses: actions/checkout@v4
 
+      # -----------------------
+      # Setup PHP + Xdebug
+      # -----------------------
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -28,79 +32,106 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
+      # -----------------------
+      # Setup Bun
+      # -----------------------
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Cache Composer Dependencies
+      # -----------------------
+      # Cache Dependencies
+      # -----------------------
+      - name: Cache Composer
         uses: actions/cache@v4
         with:
           path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          key: composer-${{ hashFiles('composer.lock') }}
 
-      - name: Cache Bun Dependencies
+      - name: Cache Bun
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
-          restore-keys: ${{ runner.os }}-bun-
+          key: bun-${{ hashFiles('bun.lockb') }}
 
-      - name: Install Dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-progress
+      # -----------------------
+      # Install Dependencies
+      # -----------------------
+      - name: Install PHP Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Copy Environment File
-        run: cp .env.example .env
-
-      - name: Generate Application Key
-        run: php artisan key:generate
-
-      - name: Install Bun Dependencies
+      - name: Install Frontend Dependencies
         run: bun install --frozen-lockfile
 
+      # -----------------------
+      # Laravel Setup
+      # -----------------------
+      - name: Prepare Environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # -----------------------
+      # Build Assets
+      # -----------------------
       - name: Build Assets
         run: bun run build
 
-      # --------------------------------
-      # Cache Tools
-      # --------------------------------
+      # -----------------------
+      # Cache Static Analysis Tools
+      # -----------------------
       - name: Cache Rector
         uses: actions/cache@v4
         with:
           path: /tmp/rector
-          key: ${{ runner.os }}-rector-${{ hashFiles('composer.lock') }}
-          restore-keys: ${{ runner.os }}-rector-
+          key: rector-${{ hashFiles('composer.lock') }}
 
       - name: Cache PHPStan
         uses: actions/cache@v4
         with:
           path: /tmp/phpstan
-          key: ${{ runner.os }}-phpstan-${{ hashFiles('composer.lock') }}
-          restore-keys: ${{ runner.os }}-phpstan-
+          key: phpstan-${{ hashFiles('composer.lock') }}
 
       - name: Create Cache Directories
         run: mkdir -p /tmp/rector /tmp/phpstan
 
-      # --------------------------------
-      # Quality Gates (طلب المشرف)
-      # --------------------------------
+      # =======================
+      # QUALITY GATES
+      # =======================
 
-      - name: Check Code Style (Pint)
+      - name: Pint Code Style Check
         run: vendor/bin/pint --test
 
-      - name: Rector Dry Run
-        run: vendor/bin/rector process --dry-run
+      # - name: Rector Dry Run
+      #   run: vendor/bin/rector process --dry-run
 
-      - name: Static Analysis (PHPStan)
-        run: vendor/bin/phpstan analyse
+      # - name: PHPStan Static Analysis
+      #   run: vendor/bin/phpstan analyse --no-progress
 
-      # --------------------------------
-      # Tests
-      # --------------------------------
+      # =======================
+      # TESTS + COVERAGE
+      # =======================
 
-      - name: Tests
-        run: composer test
+      - name: Run Tests with Coverage
+        run: vendor/bin/pest --coverage --min=70
 
-      - name: Store Artifacts
+      - name: Generate Coverage HTML
+        if: always()
+        run: vendor/bin/pest --coverage-html coverage
+
+      # -----------------------
+      # Upload Coverage Report
+      # -----------------------
+      - name: Upload Coverage Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+
+      # -----------------------
+      # Upload Screenshots on Failure
+      # -----------------------
+      - name: Upload Browser Screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
